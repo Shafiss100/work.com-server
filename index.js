@@ -1,7 +1,11 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const express = require('express')
-const app = express()
+const cors = require("cors");
+const app = express();
+app.use(cors());
+app.use(express.json());
 const port = 5000;
+
 
 
 // user: workdotcom
@@ -23,12 +27,20 @@ async function run() {
     try {
         const userCollection = client.db("userCollection").collection("users")
         // create a document to insert
-        const doc = {
-            title: "Record of a Shriveled Datum",
-            content: "No bytes, no problem. Just insert a document, in MongoDB",
-        }
-        const result = await haiku.insertOne(doc);
-        console.log(`A document was inserted with the _id: ${result.insertedId}`);
+        
+        app.post('/user', async(req, res) => {
+            const user = req.body;
+            const query = {email : user.email}
+            const filter = await userCollection.findOne(query );
+            if(!filter){
+                const result = await userCollection.insertOne(user);
+                res.send(result);
+            }
+            else{
+                res.send("success")
+            }
+            
+        })
     } finally {
         // await client.close();
     }
