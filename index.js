@@ -26,8 +26,16 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const userCollection = client.db("userCollection").collection("users")
-        // create a document to insert
-        
+        // user get and insert
+        app.get('/user', async(req, res) => {
+            const email = req.query.email;
+            console.log(email)
+            const query = {email: email}
+            // const corsor = userCollection.findOne(query)?
+            const result =  await userCollection.findOne(query);
+            console.log(result)
+            res.send(result)
+        })
         app.post('/user', async(req, res) => {
             const user = req.body;
             const query = {email : user.email}
@@ -41,6 +49,62 @@ async function run() {
             }
             
         })
+
+        // user profile update 
+        app.patch('/ulocation', async (req, res) => {
+            const userLocation = req.body.userLocation
+            const userEmail = req.body.userEmail
+            const filter = {email: userEmail}
+            const option = {upsert : true};
+            const updateDoc = {
+                $set: {
+                    userLocation: userLocation,
+                }
+            }
+            const result = await userCollection.updateOne(filter, updateDoc, option)
+            res.send({message: "success"})
+        })
+        app.patch('/ueducation', async (req, res) => {
+            const userEducation = req.body.userEducation
+            const userEmail = req.body.userEmail
+            const filter = {email: userEmail}
+            const option = {upsert : true};
+            const updateDoc = {
+                $set: {
+                    userEducation: userEducation,
+                }
+            }
+            const result = await userCollection.updateOne(filter, updateDoc, option)
+            res.send({message: "success"})
+        })
+        app.patch('/uexperience', async (req, res) => {
+            const userExperience = req.body.userExperience
+            const userEmail = req.body.userEmail
+            const filter = {email: userEmail}
+            const option = {upsert : true};
+            const updateDoc = {
+                $set: {
+                    userExperience: userExperience,
+                }
+            }
+            const result = await userCollection.updateOne(filter, updateDoc, option)
+            res.send({message: "success"})
+        })
+        app.patch('/uexpart', async (req, res) => {
+            const userExpart = req.body.userExpart
+            const userEmail = req.body.userEmail
+            const filter = {email: userEmail}
+            const option = {upsert : true};
+            const updateDoc = {
+                $set: {
+                    userExpart: userExpart,
+                }
+            }
+            const result = await userCollection.updateOne(filter, updateDoc, option)
+            res.send({message: "success"})
+        })
+
+
     } finally {
         // await client.close();
     }
